@@ -12,10 +12,10 @@ const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // Cart routes
-router.post('/add', authMiddleware, addToCart);
+router.post('/items', authMiddleware, addToCart);
 router.get('/', authMiddleware, getCart);
-router.delete('/remove', authMiddleware, removeFromCart);
-router.post('/clear', authMiddleware, clearCart);
+router.delete('/items', authMiddleware, removeFromCart);
+router.post('/', authMiddleware, clearCart);
 
 // New routes for increasing and decreasing quantity
 router.post('/increase', authMiddleware, increaseQuantity);

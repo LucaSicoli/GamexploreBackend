@@ -21,7 +21,7 @@ router.post(
 // Ruta para obtener todos los juegos
 router.get('/', authMiddleware, getGames);
 // Ruta para buscar juegos por nombre
-router.get('/search', authMiddleware, getGamesByName);
+router.get('/game', authMiddleware, getGamesByName);
 // Ruta para eliminar un juego por nombre
 router.delete('/', authMiddleware, deleteGameByName);
 // Ruta para filtrar los juegos
