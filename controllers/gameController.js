@@ -142,6 +142,22 @@ exports.getGamesByName = async (req, res) => {
     }
 };
 
+exports.getGamesByDeveloper = async (req, res) => {
+    const { developerId } = req.params;
+
+    try {
+        const games = await Game.find({ developer: developerId });
+
+        if (games.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron juegos de este desarrollador.' });
+        }
+
+        res.json(games);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // Eliminar un videojuego por nombre
 exports.deleteGameByName = async (req, res) => {
     const { name } = req.body; // Obtener el nombre del body

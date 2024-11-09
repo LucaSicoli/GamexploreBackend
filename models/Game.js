@@ -44,6 +44,12 @@ const gameSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment', 
     }],
+    stats: {
+        views: { type: Number, default: 0 },
+        buys: { type: Number, default: 0 },
+        wishlist: { type: Number, default: 0 },
+        conversionRate: { type: Number, default: 0, set: v => Math.round(v * 100) / 100 }
+    }
 }, { timestamps: true });
 
 const Game = mongoose.model('Game', gameSchema);

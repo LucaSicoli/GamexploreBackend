@@ -12,6 +12,8 @@ const isCartExpired = (cart) => {
 // Obtener el carrito del usuario
 exports.getCart = async (req, res) => {
     try {
+
+        
         // Attempt to find the cart for the user
         let cart = await Cart.findOne({ user: req.user._id }).populate('items.game', 'name price imageUrl');
 

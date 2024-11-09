@@ -1,5 +1,5 @@
 const express = require('express');
-const { createGame, getGames, getGamesByName, deleteGameByName, filterGames, getGameById } = require('../controllers/gameController');
+const { createGame, getGames, getGamesByName, deleteGameByName, filterGames, getGameById, getGamesByDeveloper } = require('../controllers/gameController');
 const authMiddleware = require('../middleware/authMiddleware'); // Middleware de autenticación
 const roleMiddleware = require('../middleware/roleMiddleware'); // Middleware de roles
 const upload = require('../middleware/upload'); // Middleware de Multer
@@ -28,5 +28,7 @@ router.delete('/', authMiddleware, deleteGameByName);
 router.get('/filter', authMiddleware, filterGames);
 // Ruta para obtener un juego por ID
 router.get('/:gameId', authMiddleware, getGameById);
+// Ruta para obtener los juegos de un desarrollador
+router.get('/developer/:developerId', authMiddleware, getGamesByDeveloper);
 
 module.exports = router;
