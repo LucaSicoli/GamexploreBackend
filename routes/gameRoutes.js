@@ -39,4 +39,5 @@ router.get('/company', authMiddleware, roleMiddleware('empresa'), getCompanyGame
 router.put('/:gameId/views', incrementGameViews);
 
 
+
 module.exports = router;

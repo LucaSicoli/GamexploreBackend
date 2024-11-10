@@ -1,5 +1,6 @@
 const Cart = require('../models/cart');
 const Order = require('../models/order');
+const Game = require('../models/Game'); // Importa el modelo Game
 
 // Helper functions for validation
 const isValidCardNumber = (number) => /^\d{16}$/.test(number.replace(/-/g, ''));
@@ -93,6 +94,13 @@ exports.createOrder = async (req, res) => {
         });
 
         await order.save();
+
+        for (const item of cart.items) {
+            await Game.findByIdAndUpdate(item.game._id, {
+                $inc: { purchases: item.quantity } // Incrementa la cantidad de compras
+            });
+        }
+
         await Cart.findByIdAndDelete(cart._id); // Vacía el carrito
 
         res.status(201).json({ message: 'Orden creada exitosamente.', order });

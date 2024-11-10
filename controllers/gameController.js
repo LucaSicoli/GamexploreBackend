@@ -271,6 +271,24 @@ exports.incrementGameViews = async (req, res) => {
     }
 };
 
+// En gameController.js
+exports.fetchGamesPurchasesCount = async (req, res) => {
+    try {
+        // Ensure you're not querying with an invalid string
+        const games = await Game.find({}, 'purchases'); // Only fetches the `purchases` field
+        const purchasesCount = games.reduce((acc, game) => {
+            acc[game._id] = game.purchases || 0;
+            return acc;
+        }, {});
+        
+        res.json(purchasesCount);
+    } catch (error) {
+        console.error('Error fetching game purchases count:', error);
+        res.status(500).json({ message: 'Error fetching purchases count' });
+    }
+};
+
+
 
 
 
