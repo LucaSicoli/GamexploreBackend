@@ -7,7 +7,6 @@ const gameRoutes = require('./routes/gameRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const commentRoutes = require('./routes/commentRoutes');
-const reportRoutes = require('./routes/reportRoutes'); // Rutas de reportes
 const cartRoutes = require('./routes/cartRoutes'); // Importa correctamente las rutas del carrito
 const authMiddleware = require('./middleware/authMiddleware'); // Importa correctamente el middleware
 const cors = require('cors'); // Importa el módulo de CORS
@@ -37,8 +36,7 @@ app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/games', authMiddleware, gameRoutes);
 app.use('/api/wishlist', authMiddleware, wishlistRoutes);
 app.use('/api/comments', authMiddleware, commentRoutes);
-app.use('/api/orders', authMiddleware, orderRoutes);
-app.use('/api/reports', authMiddleware, reportRoutes); // Ruta corregida para reportes
+app.use('/api/checkout', authMiddleware, orderRoutes);
 app.use('/api/cart', authMiddleware, cartRoutes);
 
 // Verificar estado del servidor

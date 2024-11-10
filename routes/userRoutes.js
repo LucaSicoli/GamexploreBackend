@@ -1,9 +1,13 @@
+// routes/userRoutes.js
 const express = require('express');
-const { getAllUsers } = require('../controllers/userController'); // Asegúrate de importar la función correctamente
-const authMiddleware = require('../middleware/authMiddleware');  // Si usas autenticación, asegúrate de incluir este middleware
+const { getUserProfile, getAllUsers } = require('../controllers/userController');
+const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // Ruta para obtener todos los usuarios
 router.get('/', authMiddleware, getAllUsers);
+
+// Ruta para obtener el perfil de un usuario por ID
+router.get('/:userId', authMiddleware, getUserProfile);
 
 module.exports = router;

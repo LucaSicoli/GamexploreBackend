@@ -1,4 +1,4 @@
-const Cart = require('../models/Cart');
+const Cart = require('../models/cart');
 const Game = require('../models/Game');
 
 // Verificar si el carrito ha expirado

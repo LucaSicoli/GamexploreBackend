@@ -12,6 +12,10 @@ const userSchema = new mongoose.Schema({
     dateOfBirth: { type: Date, required: true },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
+    games: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Game' 
+    }], // Nueva lista de juegos solo para usuarios tipo 'empresa'
 }, { timestamps: true });
 
 // Middleware para encriptar la contraseña antes de guardar

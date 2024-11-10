@@ -10,64 +10,68 @@ const crypto = require('crypto');
 // Función para registrar un nuevo usuario (gamer o empresa)
 // Función para registrar un nuevo usuario (gamer o empresa)
 // controllers/authController.js
-exports.registerUser = async (req, res) => {
-  const { name, email, password, role, dateOfBirth, description } = req.body;
+// controllers/authController.js
 
-  try {
+exports.registerUser = async (req, res) => {
+    const { name, email, password, role, dateOfBirth, description } = req.body;
+  
+    try {
       if (!name) return res.status(400).json({ message: 'El nombre es obligatorio.' });
       if (!email) return res.status(400).json({ message: 'El correo electrónico es obligatorio.' });
       if (!password) return res.status(400).json({ message: 'La contraseña es obligatoria.' });
       if (!dateOfBirth) return res.status(400).json({ message: 'La fecha de nacimiento es requerida.' });
-
+  
       const userExists = await User.findOne({ email });
       if (userExists) return res.status(400).json({ message: 'El correo electrónico ya está registrado.' });
-
+  
+      // Validación de edad
       const birthDate = new Date(dateOfBirth);
       const today = new Date();
       let age = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
+        age--;
       }
       if (age < 12) {
-          return res.status(400).json({ message: 'Debes ser mayor de 12 años para registrarte.' });
+        return res.status(400).json({ message: 'Debes ser mayor de 12 años para registrarte.' });
       }
-
+  
       let logoUrl = null;
       if (req.file && role === 'empresa') {
-          const storageRef = ref(storage, `logos/${uuidv4()}_${req.file.originalname}`);
-          await uploadBytes(storageRef, req.file.buffer);
-          logoUrl = await getDownloadURL(storageRef);
+        const storageRef = ref(storage, `logos/${uuidv4()}_${req.file.originalname}`);
+        await uploadBytes(storageRef, req.file.buffer);
+        logoUrl = await getDownloadURL(storageRef);
       }
-
+  
       const user = new User({
-          name,
-          email,
-          password,
-          role: role || 'gamer',
-          logo: logoUrl,
-          dateOfBirth,
-          description: role === 'empresa' ? description : null,
+        name,
+        email,
+        password,
+        role: role || 'gamer',
+        logo: logoUrl,
+        dateOfBirth,
+        description: role === 'empresa' ? description : null,
       });
-
+  
       await user.save();
-
+  
       res.status(201).json({
-          message: 'Usuario registrado exitosamente',
-          user: {
-              id: user._id,
-              name: user.name,
-              email: user.email,
-              role: user.role,
-              logo: user.logo || 'No logo uploaded',
-              dateOfBirth: user.dateOfBirth,
-              description: user.description, // Añadimos la descripción
-          },
+        message: 'Usuario registrado exitosamente',
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          logo: user.logo || 'No logo uploaded',
+          dateOfBirth: user.dateOfBirth,
+          description: user.description,
+        },
       });
-  } catch (error) {
+    } catch (error) {
       res.status(500).json({ message: 'Ha ocurrido un error al registrar al usuario. Por favor, inténtelo de nuevo.' });
-  }
-};
+    }
+  };
+  
 
   
 
