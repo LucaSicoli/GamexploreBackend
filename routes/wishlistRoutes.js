@@ -1,5 +1,5 @@
 const express = require('express');
-const { addToWishlist, getWishlist, removeFromWishlist } = require('../controllers/wishlistController');
+const { addToWishlist, getWishlist, removeFromWishlist, countGameInWishlists } = require('../controllers/wishlistController');
 const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
@@ -11,5 +11,8 @@ router.post('/', authMiddleware, addToWishlist);
 
 // Ruta para eliminar un videojuego de la wishlist
 router.delete('/', authMiddleware, removeFromWishlist);
+
+// Ruta para contar cuántas wishlists contienen un videojuego
+router.get('/:gameId/count', countGameInWishlists);
 
 module.exports = router;

@@ -250,6 +250,28 @@ exports.getCompanyGames = async (req, res) => {
     }
 };
 
+exports.incrementGameViews = async (req, res) => {
+    const { gameId } = req.params;
+
+    try {
+        const game = await Game.findByIdAndUpdate(
+            gameId,
+            { $inc: { views: 1 } }, // Incrementa las visualizaciones en 1
+            { new: true } // Retorna el documento actualizado
+        );
+
+        if (!game) {
+            return res.status(404).json({ message: 'Juego no encontrado.' });
+        }
+
+        res.json({ views: game.views });
+    } catch (error) {
+        console.error('Error al incrementar visualizaciones:', error);
+        res.status(500).json({ message: 'Error al incrementar visualizaciones.' });
+    }
+};
+
+
 
 
 

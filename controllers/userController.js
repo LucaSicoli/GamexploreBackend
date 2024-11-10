@@ -10,9 +10,21 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
+// Controlador: src/controllers/userController.js
 exports.getUserProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.params.userId).populate('games', 'name category price imageUrl');
+        const user = await User.findById(req.params.userId).populate({
+            path: 'games',
+            select: 'name category price imageUrl wishlistCount rating ratingCount views',
+            populate: {
+                path: 'comments',
+                select: 'rating text user createdAt',
+                populate: {
+                    path: 'user',
+                    select: 'name'
+                }
+            }
+        });
         
         if (!user) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
@@ -23,3 +35,4 @@ exports.getUserProfile = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+

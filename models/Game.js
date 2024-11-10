@@ -45,6 +45,8 @@ const gameSchema = new mongoose.Schema({
         ref: 'Comment', 
     }],
     isPublished: { type: Boolean, default: false },
+    views: { type: Number, default: 0 }, // Nuevo campo para las visualizaciones
+    wishlistCount: { type: Number, default: 0 },
 }, { timestamps: true });
 
 const Game = mongoose.model('Game', gameSchema);

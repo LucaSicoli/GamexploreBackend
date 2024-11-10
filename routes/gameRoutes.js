@@ -1,5 +1,5 @@
 const express = require('express');
-const { createGame, getGames, getGamesByName, deleteGameByName, filterGames, getGameById, togglePublishGame, getCompanyGames } = require('../controllers/gameController');
+const { createGame, getGames, getGamesByName, deleteGameByName, filterGames, getGameById, togglePublishGame, getCompanyGames, incrementGameViews } = require('../controllers/gameController');
 const authMiddleware = require('../middleware/authMiddleware'); // Middleware de autenticación
 const roleMiddleware = require('../middleware/roleMiddleware'); // Middleware de roles
 const upload = require('../middleware/upload'); // Middleware de Multer
@@ -17,6 +17,7 @@ router.post(
     getGameById,
     togglePublishGame,
     getCompanyGames,
+    incrementGameViews,
     
 );
 
@@ -34,6 +35,8 @@ router.get('/:gameId', authMiddleware, getGameById);
 router.put('/publish/:gameId', authMiddleware, roleMiddleware('empresa'), togglePublishGame);
 // Ruta para obtener los juegos de una empresa
 router.get('/company', authMiddleware, roleMiddleware('empresa'), getCompanyGames);
+// Ruta para incrementar las vistas de un juego
+router.put('/:gameId/views', incrementGameViews);
 
 
 module.exports = router;
