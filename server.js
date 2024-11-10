@@ -36,7 +36,7 @@ app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/games', authMiddleware, gameRoutes);
 app.use('/api/wishlist', authMiddleware, wishlistRoutes);
 app.use('/api/comments', authMiddleware, commentRoutes);
-app.use('/api/orders', authMiddleware, orderRoutes);
+app.use('/api/checkout', authMiddleware, orderRoutes);
 app.use('/api/cart', authMiddleware, cartRoutes);
 
 // Verificar estado del servidor
