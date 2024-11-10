@@ -44,6 +44,7 @@ const gameSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment', 
     }],
+    isPublished: { type: Boolean, default: false },
 }, { timestamps: true });
 
 const Game = mongoose.model('Game', gameSchema);

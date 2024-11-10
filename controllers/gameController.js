@@ -2,6 +2,8 @@ const { storage } = require('../config/firebase'); // Firebase Storage
 const { ref, uploadBytes, getDownloadURL } = require('firebase/storage'); // Funciones de Firebase Storage
 const { v4: uuidv4 } = require('uuid'); // Generar identificador único
 const Game = require('../models/Game'); // Modelo de Juego
+const mongoose = require('mongoose');
+const User = require('../models/User');
 
 // Crear un nuevo videojuego con imagen (solo empresas)
 exports.createGame = async (req, res) => {
@@ -82,7 +84,11 @@ exports.createGame = async (req, res) => {
         });
 
         await game.save();
-        res.status(201).json({ message: 'Juego creado con éxito.', game });
+
+        // Agregar el ID del juego al usuario (empresa)
+        await User.findByIdAndUpdate(req.user._id, { $push: { games: game._id } });
+
+        res.status(201).json({ message: 'Juego creado con éxito y asociado al usuario.', game });
     } catch (error) {
         console.error('Error al crear el juego:', error);
         res.status(500).json({ message: 'Ha ocurrido un error al crear el juego. Inténtalo de nuevo más tarde.' });
@@ -209,5 +215,43 @@ exports.filterGames = async (req, res) => {
         res.status(500).json({ message: 'Error al filtrar los juegos. Inténtelo de nuevo.' });
     }
 };
+
+// src/controllers/gameController.js
+exports.togglePublishGame = async (req, res) => {
+    const { gameId } = req.params;
+    
+    try {
+        const game = await Game.findById(gameId);
+        if (!game) return res.status(404).json({ message: 'Game not found.' });
+
+        game.isPublished = !game.isPublished;
+        await game.save();
+
+        res.json({ message: `Game ${game.isPublished ? 'published' : 'unpublished'} successfully.`, game });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Fetch games created by the logged-in company user
+exports.getCompanyGames = async (req, res) => {
+    try {
+        const games = await Game.aggregate([
+            {
+                $match: {
+                    developer: { $eq: mongoose.Types.ObjectId(req.user._id) } // Convierte y compara en la agregación
+                }
+            }
+        ]);
+        res.json(games);
+    } catch (error) {
+        console.error('Error obteniendo los juegos de la empresa:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+
+
 
 
