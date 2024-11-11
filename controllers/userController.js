@@ -15,7 +15,7 @@ exports.getUserProfile = async (req, res) => {
     try {
         const user = await User.findById(req.params.userId).populate({
             path: 'games',
-            select: 'name category price imageUrl wishlistCount rating purchases ratingCount views',
+            select: 'name category price imageUrl wishlistCount rating purchases ratingCount isPublished views',
             populate: {
                 path: 'comments',
                 select: 'rating text user createdAt',

@@ -3,7 +3,7 @@ const {
     createGame,
     getGames,
     getGamesByName,
-    deleteGameByName,
+    deleteGameById,
     filterGames,
     getGameById,
     togglePublishGame,
@@ -30,8 +30,8 @@ router.post(
 router.get('/', authMiddleware, getGames);
 // Ruta para buscar juegos por nombre
 router.get('/game', authMiddleware, getGamesByName);
-// Ruta para eliminar un juego por nombre
-router.delete('/', authMiddleware, deleteGameByName);
+// Ruta para eliminar un juego por ID
+router.delete('/:gameId', authMiddleware, deleteGameById);
 // Ruta para filtrar los juegos
 router.get('/filter', authMiddleware, filterGames);
 // Ruta para obtener un juego por ID

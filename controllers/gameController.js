@@ -149,17 +149,18 @@ exports.getGamesByName = async (req, res) => {
 };
 
 // Eliminar un videojuego por nombre
-exports.deleteGameByName = async (req, res) => {
-    const { name } = req.body; // Obtener el nombre del body
+// Eliminar un videojuego por ID
+exports.deleteGameById = async (req, res) => {
+    const { gameId } = req.params; // Obtener el ID del juego desde los parámetros
 
     try {
-        const game = await Game.findOneAndDelete({ name });
+        const game = await Game.findByIdAndDelete(gameId); // Buscar y eliminar el juego por ID
 
         if (!game) {
             return res.status(404).json({ message: 'Videojuego no encontrado.' });
         }
 
-        res.json({ message: `El juego "${name}" ha sido eliminado con éxito.` });
+        res.json({ message: `El juego "${game.name}" ha sido eliminado con éxito.` });
     } catch (error) {
         res.status(500).json({ message: error.message }); // Manejo de errores
     }
