@@ -257,38 +257,33 @@ exports.updateGame = async (req, res) => {
     }
 };
 
-// Controlador de filtrado de juegos
 exports.filterGames = async (req, res) => {
-    const { category, platform, maxPrice, search, language, players, rating } = req.query;
-
+    const { category, platform, maxPrice, search, language, players, rating, isPublished } = req.query;
+  
     try {
-        const query = {};
-
-        if (category) query.category = { $regex: new RegExp(category, 'i') };
-        if (platform) query.platform = { $in: platform.split(',') };
-        if (language) query.language = { $regex: new RegExp(language, 'i') };
-        if (players) query.players = { $regex: new RegExp(players, 'i') };
-        if (rating) query.rating = { $regex: new RegExp(rating, 'i') };
-
-        if (maxPrice !== undefined) {
-            const maxPriceNum = parseFloat(maxPrice);
-            if (maxPriceNum === 0) {
-                query.price = 0;
-            } else if (!isNaN(maxPriceNum)) {
-                query.price = { $lte: maxPriceNum };
-            }
-        }
-
-        if (search) query.name = { $regex: new RegExp(search, 'i') };
-
-        const games = await Game.find(query).limit(50);
-        res.json(games);
-
+      const query = { isPublished: true };
+  
+      if (category) query.category = { $regex: new RegExp(category, 'i') };
+      if (platform) query.platform = { $in: platform.split(',') };
+      if (maxPrice !== undefined) {
+        const maxPriceNum = parseFloat(maxPrice);
+        if (!isNaN(maxPriceNum)) query.price = { $lte: maxPriceNum };
+      }
+      if (search) query.name = { $regex: new RegExp(search, 'i') };
+      if (language) query.language = { $regex: new RegExp(language, 'i') };
+      if (players) query.players = { $regex: new RegExp(players, 'i') };
+      if (rating) query.rating = { $gte: parseFloat(rating) };
+  
+      const games = await Game.find(query).limit(50);
+      res.json(games);
     } catch (error) {
-        console.error('Error en el filtrado de juegos:', error);
-        res.status(500).json({ message: 'Error al filtrar los juegos. Inténtelo de nuevo.' });
+      console.error('Error en el filtrado de juegos:', error);
+      res.status(500).json({ message: 'Error al filtrar los juegos. Inténtelo de nuevo.' });
     }
-};
+  };
+  
+  
+
 
 exports.togglePublishGame = async (req, res) => {
     const { gameId } = req.params;
