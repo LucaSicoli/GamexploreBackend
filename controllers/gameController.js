@@ -168,10 +168,80 @@ exports.deleteGameByName = async (req, res) => {
 // Actualizar un videojuego por ID
 exports.updateGame = async (req, res) => {
     const { gameId } = req.params;
-    const updates = req.body;
+    const { name, category, description, systemRequirements, price, players, language, platform } = req.body;
+    const image = req.file;
 
     try {
-        const game = await Game.findByIdAndUpdate(gameId, updates, { new: true });
+        // Validación: Solo empresas pueden actualizar juegos
+        if (req.user.role !== 'empresa') {
+            return res.status(403).json({ message: 'No tienes permiso para actualizar un juego.' });
+        }
+
+        // Validación: El precio debe ser 0 o mayor
+        if (price < 0) {
+            return res.status(400).json({ message: 'El precio no puede ser negativo. Debe ser 0 para juegos gratuitos o mayor a 0.' });
+        }
+
+        // Validación: Las plataformas deben ser válidas
+        const platformsArray = typeof platform === 'string' ? platform.split(',').map(p => p.trim()) : platform;
+        const validPlatforms = ['Windows', 'Mac', 'Linux'];
+        const invalidPlatforms = platformsArray.filter(p => !validPlatforms.includes(p));
+        if (invalidPlatforms.length > 0) {
+            return res.status(400).json({ message: `Las siguientes plataformas no son válidas: ${invalidPlatforms.join(', ')}` });
+        }
+
+        // Validación: Los idiomas deben ser válidos
+        const languagesArray = typeof language === 'string' ? language.split(',').map(lang => lang.trim()) : language;
+        const validLanguages = ['Inglés', 'Español', 'Francés', 'Alemán', 'Chino', 'Japonés', 'Italiano', 'Portugués'];
+        const invalidLanguages = languagesArray.filter(lang => !validLanguages.includes(lang));
+        if (invalidLanguages.length > 0) {
+            return res.status(400).json({ message: `Los siguientes idiomas no son válidos: ${invalidLanguages.join(', ')}` });
+        }
+
+        // Subir la imagen a Firebase Storage si se proporciona una nueva imagen
+        let imageUrl = undefined;
+        if (image) {
+            const storageRef = ref(storage, `games/${uuidv4()}_${image.originalname}`);
+            await uploadBytes(storageRef, image.buffer);
+            imageUrl = await getDownloadURL(storageRef);
+        }
+
+        // Validación y estructura de los requisitos del sistema
+        const { minimum, recommended } = systemRequirements;
+
+        if (!minimum || !recommended) {
+            return res.status(400).json({ message: 'Los requisitos mínimos y recomendados son obligatorios.' });
+        }
+
+        const structuredSystemRequirements = {
+            minimum: {
+                cpu: minimum.cpu || '',
+                gpu: minimum.gpu || '',
+                ram: minimum.ram || '',
+                storage: minimum.storage || '',
+            },
+            recommended: {
+                cpu: recommended.cpu || '',
+                gpu: recommended.gpu || '',
+                ram: recommended.ram || '',
+                storage: recommended.storage || '',
+            }
+        };
+
+        // Actualizar el juego en la base de datos
+        const updatedGameData = {
+            name,
+            category,
+            description,
+            systemRequirements: structuredSystemRequirements,
+            price,
+            players,
+            language: languagesArray,
+            platform: platformsArray,
+            ...(imageUrl && { imageUrl }), // Solo agregar imageUrl si se ha subido una nueva imagen
+        };
+
+        const game = await Game.findByIdAndUpdate(gameId, updatedGameData, { new: true });
 
         if (!game) {
             return res.status(404).json({ message: 'Juego no encontrado.' });
@@ -179,7 +249,8 @@ exports.updateGame = async (req, res) => {
 
         res.json({ message: 'Juego actualizado con éxito.', game });
     } catch (error) {
-        res.status(500).json({ message: error.message }); // Manejo de errores
+        console.error('Error al actualizar el juego:', error);
+        res.status(500).json({ message: 'Error al actualizar el juego.' });
     }
 };
 
