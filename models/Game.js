@@ -45,6 +45,7 @@ const gameSchema = new mongoose.Schema({
         ref: 'Comment', 
     }],
     isPublished: { type: Boolean, default: false },
+    publishedDate: { type: Date, default: null },
     views: { type: Number, default: 0 }, // Nuevo campo para las visualizaciones
     wishlistCount: { type: Number, default: 0 },
     purchases: { type: Number, default: 0 },

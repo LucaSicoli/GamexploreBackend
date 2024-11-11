@@ -81,6 +81,8 @@ exports.createGame = async (req, res) => {
             platform: platformsArray,
             imageUrl,
             developer: req.user._id,
+            publishedDate: new Date(), // Asigna la fecha actual como fecha de creación
+            isPublished: false // Establecer como no publicado por defecto
         });
 
         await game.save();
@@ -288,15 +290,22 @@ exports.filterGames = async (req, res) => {
     }
 };
 
-// src/controllers/gameController.js
 exports.togglePublishGame = async (req, res) => {
     const { gameId } = req.params;
-    
+
     try {
         const game = await Game.findById(gameId);
         if (!game) return res.status(404).json({ message: 'Game not found.' });
 
-        game.isPublished = !game.isPublished;
+        // Cambia solo `isPublished`, no sobrescribas `publishedDate`
+        if (!game.isPublished) {
+            game.isPublished = true;
+            game.publishedDate = new Date(); // Fecha actual si se publica
+        } else {
+            game.isPublished = false;
+            // No modificamos `publishedDate` al despublicar
+        }
+
         await game.save();
 
         res.json({ message: `Game ${game.isPublished ? 'published' : 'unpublished'} successfully.`, game });
@@ -304,6 +313,8 @@ exports.togglePublishGame = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
 
 // Fetch games created by the logged-in company user
 exports.getCompanyGames = async (req, res) => {
